@@ -6,6 +6,15 @@
     android:background="#141A31"
     tools:context=".ui.fragments.GamesListFragment">
 
+    <TextView
+        android:text="PRODUCTOS DEL DÍA"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
+
     <ProgressBar
         android:id="@+id/pbLoading"
         android:layout_width="50dp"
@@ -15,7 +24,9 @@
         android:indeterminateDuration="1500"
         />
 
+
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="50dp"
         android:id="@+id/rvGames"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.apprf.R
@@ -27,6 +28,10 @@ private const val GAME_ID = "game_id"
 
 class GameDetailFragment : Fragment() {
 
+
+    //nuevo codigo  ****************
+    //private lateinit var videoView: VideoView
+
     private var game_id: String? = null
 
     private var _binding: FragmentGameDetailBinding? = null
@@ -40,6 +45,18 @@ class GameDetailFragment : Fragment() {
             game_id = args.getString(GAME_ID)
 
             Log.d(Constants.LOGTAG, "Id recibido: $game_id")
+
+
+            // Inicializar el VideoView  ***********************
+            //videoView = view.findViewById(R.id.videoView)
+            //val packageName = requireActivity().packageName
+            //binding.videoView.setVideoPath("android.resource://${packageName}/${R.raw.maverick}")
+           // binding.videoView.setVideoPath("android.resource://${requireActivity().packageName}/${R.raw.maverick}")
+
+            //val videoPath = "android.resource://$packageName/${R.raw.maverick}"
+            //binding.videoView.setVideoPath(videoPath)
+
+          // binding.videoView.start()
 
             repository = (requireActivity().application as PracticaRFApp).repository
 
@@ -69,6 +86,9 @@ class GameDetailFragment : Fragment() {
                                 Glide.with(requireContext())
                                     .load(response.body()?.image)
                                     .into(ivImage)
+
+                                binding.videoView.setVideoPath(response.body()?.video)
+                                binding.videoView.start()
                             }
                         }
 
@@ -90,6 +110,11 @@ class GameDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding= FragmentGameDetailBinding.inflate(inflater, container, false)
+
+        // Aquí puedes acceder a las vistas a través de binding
+       // val packageName = requireActivity().packageName
+       // binding.videoView.setVideoPath("android.resource://${packageName}/${R.raw.maverick}")
+       // binding.videoView.start()
         return binding.root
     }
 

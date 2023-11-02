@@ -1,5 +1,6 @@
 package com.example.apprf.ui.fragments
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import com.example.apprf.application.PracticaRFApp
 import com.example.apprf.data.GameRepository
 import com.example.apprf.data.remote.model.GameDto
 import com.example.apprf.databinding.FragmentGamesListBinding
+import com.example.apprf.ui.MainActivity
 import com.example.apprf.ui.adapters.GamesAdapter
 import com.example.apprf.util.Constants
 import kotlinx.coroutines.launch
@@ -23,6 +25,8 @@ import retrofit2.Response
 
 
 class GamesListFragment : Fragment() {
+
+    lateinit var mp: MediaPlayer
 
     private var _binding: FragmentGamesListBinding? = null
     private val binding get() = _binding!!
@@ -40,11 +44,28 @@ class GamesListFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentGamesListBinding.inflate(inflater, container, false)
+
+        //if (requireActivity() is MainActivity) {
+        //    val mainActivity = requireActivity() as MainActivity
+          //  mainActivity.mp.start()
+
+            mp = MediaPlayer.create(requireContext(), R.raw.zelda)
+            mp.isLooping = true  // Reproducir en bucle
+            mp.start()  // Comenzar la reproducción
+
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
+
+
+
+
 
         repository = (requireActivity().application as PracticaRFApp).repository
 
@@ -60,6 +81,8 @@ class GamesListFragment : Fragment() {
                     binding.pbLoading.visibility = View.GONE
                     Log.d(Constants.LOGTAG, "Respuesta del servidor ${response.body()}")
 
+
+
                     response.body()?.let{games ->
                         binding.rvGames.apply {
                             layoutManager = LinearLayoutManager(requireContext())
@@ -70,6 +93,9 @@ class GamesListFragment : Fragment() {
                                         .replace(R.id.fragment_container, GameDetailFragment.newInstance(id))
                                         .addToBackStack(null)
                                         .commit()
+                                    //if (requireActivity() is MainActivity) {
+                                        //val mainActivity = requireActivity() as MainActivity
+                                       // mainActivity.mp.stop()}
                                 }
                             }
                         }
@@ -92,8 +118,32 @@ class GamesListFragment : Fragment() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        // Comenzar la reproducción nuevamente al volver al fragmento
+        //if (requireActivity() is MainActivity) {
+           // val mainActivity = requireActivity() as MainActivity
+           // mainActivity.mp.start()}
+        mp.start()
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Liberar los recursos del MediaPlayer cuando el fragmento se destruye
+        mp.release()
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
+
+        //mp.stop()
+
+        //if (requireActivity() is MainActivity) {
+          //  val mainActivity = requireActivity() as MainActivity
+           // mainActivity.mp.stop()}
+
         _binding = null
     }
 

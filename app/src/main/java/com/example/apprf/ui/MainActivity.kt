@@ -1,5 +1,6 @@
 package com.example.apprf.ui
 
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -22,6 +23,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+
+
    /*private lateinit var repository: GameRepository
     private lateinit var retrofit: Retrofit*/
 
@@ -32,6 +35,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        //Reproduccion de musica
+
+       // mp = MediaPlayer.create(this, R.raw.zelda)
+       // mp.start()
 
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
