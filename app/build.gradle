@@ -1,16 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
     namespace 'com.example.apprf'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.apprf"
         minSdk 23
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -59,6 +60,14 @@ dependencies {
 
     //Imágenes con bordes redondeados
     implementation 'com.makeramen:roundedimageview:2.3.0'
+
+    //Shared preferences encriptadas
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+    implementation 'com.google.firebase:firebase-auth:22.2.0'
+
+
+    //google maps
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
 
 
     testImplementation 'junit:junit:4.13.2'

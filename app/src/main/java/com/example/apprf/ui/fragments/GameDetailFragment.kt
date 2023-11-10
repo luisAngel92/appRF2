@@ -16,23 +16,39 @@ import com.example.apprf.data.GameRepository
 import com.example.apprf.data.remote.model.GameDetailDto
 import com.example.apprf.databinding.FragmentGameDetailBinding
 import com.example.apprf.util.Constants
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
+
 private const val GAME_ID = "game_id"
 
 
 
-class GameDetailFragment : Fragment() {
+class GameDetailFragment : Fragment(), OnMapReadyCallback {
+
+    private var call: Call<GameDetailDto>? = null
 
 
-    //nuevo codigo  ****************
-    //private lateinit var videoView: VideoView
+    private lateinit var mapFragment: SupportMapFragment
+
+
+    private lateinit var map: GoogleMap
+
 
     private var game_id: String? = null
+
+    private var long: Double? = null
+    private var lat: Double? = null
 
     private var _binding: FragmentGameDetailBinding? = null
     private val binding get() = _binding!!
@@ -47,24 +63,16 @@ class GameDetailFragment : Fragment() {
             Log.d(Constants.LOGTAG, "Id recibido: $game_id")
 
 
-            // Inicializar el VideoView  ***********************
-            //videoView = view.findViewById(R.id.videoView)
-            //val packageName = requireActivity().packageName
-            //binding.videoView.setVideoPath("android.resource://${packageName}/${R.raw.maverick}")
-           // binding.videoView.setVideoPath("android.resource://${requireActivity().packageName}/${R.raw.maverick}")
 
-            //val videoPath = "android.resource://$packageName/${R.raw.maverick}"
-            //binding.videoView.setVideoPath(videoPath)
-
-          // binding.videoView.start()
 
             repository = (requireActivity().application as PracticaRFApp).repository
 
             lifecycleScope.launch {
                 game_id?.let{id->
-                    val call: Call<GameDetailDto> = repository.getGameDetailApiary(id)
+                    call = repository.getGameDetailApiary(id)
+                    //val call: Call<GameDetailDto> = repository.getGameDetailApiary(id)
 
-                    call.enqueue(object: Callback<GameDetailDto>{
+                    call!!.enqueue(object: Callback<GameDetailDto>{
                         override fun onResponse(
                             call: Call<GameDetailDto>,
                             response: Response<GameDetailDto>
@@ -81,6 +89,10 @@ class GameDetailFragment : Fragment() {
                                 tvSeller.text = response.body()?.seller
                                 tvUbiation.text = response.body()?.ubication
                                 tvPrice.text = response.body()?.price
+
+                                long= response.body()?.longitud
+                                lat =response.body()?.latitud
+
                                 //**********************************
 
                                 Glide.with(requireContext())
@@ -103,6 +115,11 @@ class GameDetailFragment : Fragment() {
             }
 
         }
+
+
+
+
+
     }
 
     override fun onCreateView(
@@ -111,17 +128,24 @@ class GameDetailFragment : Fragment() {
     ): View? {
         _binding= FragmentGameDetailBinding.inflate(inflater, container, false)
 
-        // Aquí puedes acceder a las vistas a través de binding
-       // val packageName = requireActivity().packageName
-       // binding.videoView.setVideoPath("android.resource://${packageName}/${R.raw.maverick}")
-       // binding.videoView.start()
+
+//********************************************
+
+
+
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+
+
         return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
+
+
+
+
+
 
     companion object {
 
@@ -134,4 +158,63 @@ class GameDetailFragment : Fragment() {
                 }
             }
     }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        createMarker()
+
+
+    }
+
+    private fun createMarker(){
+        if (!::map.isInitialized) {
+            map.clear() // Limpia todos los marcadores
+        }
+
+        //val coordinates = LatLng( 0.0,  0.0)
+        //val coordinates = LatLng(lat!!, long!!)
+        val coordinates = LatLng(lat ?: 0.0, long ?: 0.0)
+        val marker = MarkerOptions()
+            .position(coordinates)
+            .title("DGTIC-UNAM")
+            .snippet("Cursos y diplomados en tic")
+            .icon(BitmapDescriptorFactory.fromResource(R.drawable.school))
+
+        map.addMarker(marker)
+
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(coordinates, 18f),
+            4000,
+            null
+        )
+
+    }
+
+
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (!::map.isInitialized) {
+            map.clear() // Limpia todos los marcadores
+        }
+
+        call?.cancel()
+
+        _binding = null
+
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        _binding = null
+    }
+
+
+
+
+
+
 }

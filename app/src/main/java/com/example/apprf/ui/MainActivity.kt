@@ -13,20 +13,69 @@ import com.example.apprf.data.remote.model.GameDto
 import com.example.apprf.databinding.ActivityMainBinding
 import com.example.apprf.ui.fragments.GamesListFragment
 import com.example.apprf.util.Constants
+import com.google.android.gms.common.api.GoogleApi
+import com.google.android.gms.maps.GoogleMap
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    //para google maps
 
 
-   /*private lateinit var repository: GameRepository
-    private lateinit var retrofit: Retrofit*/
+
+    //Para los permisos
+
+    private var fineLocationPermissionGranted = false
+
+
+
+
+
+
+//parece que esto es olo para ubicar a la persona en un punto y no solo el mapa como queremos
+    private val permissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ){ isGranted ->
+        if(isGranted){
+            //Se concedió el permiso
+            actionPermissionGranted()
+        }else{
+            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder(this)
+                    .setTitle("Permiso requerido")
+                    .setMessage("Se necesita el permiso para poder ubicar la posición del usuario en el mapa")
+                    .setPositiveButton("Entendido"){ _, _ ->
+                        updateOrRequestPermissions()
+                    }
+                    .setNegativeButton("Salir"){ dialog, _ ->
+                        dialog.dismiss()
+                        finish()
+                    }
+                    .create()
+                    .show()
+            } else {
+                Toast.makeText(
+                    this,
+                    "El permiso de ubicación se ha negado permanentemente",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -37,10 +86,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        //Reproduccion de musica
 
-       // mp = MediaPlayer.create(this, R.raw.zelda)
-       // mp.start()
 
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
@@ -48,29 +94,38 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-      /*  retrofit = RetrofitHelper().getRetrofit()
 
-        repository = GameRepository(retrofit)
+        //val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        //mapFragment.getMapAsync(this)
 
-        lifecycleScope.launch {
-            val call: Call<List<GameDto>> = repository.getGames("cm/games/games_list.php")
-
-            call.enqueue(object: Callback<List<GameDto>>{
-                override fun onResponse(
-                    call: Call<List<GameDto>>,
-                    response: Response<List<GameDto>>
-                ) {
-                    Log.d(Constants.LOGTAG, "Respuesta del servidor ${response.body()}")
-                }
-
-                override fun onFailure(call: Call<List<GameDto>>, t: Throwable) {
-                    //manejo del error
-                    Toast.makeText(this@MainActivity, "Error ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-
-            })
-        }*/
 
 
     }
+
+
+    private fun actionPermissionGranted() {
+
+    }
+
+
+    private fun updateOrRequestPermissions() {
+        //Revisando el permiso
+        val hasFineLocationPermission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        fineLocationPermissionGranted = hasFineLocationPermission
+
+        if (!fineLocationPermissionGranted) {
+            //Pedimos el permiso
+            permissionsLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }else{
+            //Tenemos los permisos
+            actionPermissionGranted()
+        }
+
+    }
+
+
 }

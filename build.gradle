@@ -7,6 +7,9 @@ buildscript {
         glideVersion = '4.13.2'
         picassoVersion = '2.71828'
     }
+    dependencies {
+        classpath 'com.google.gms:google-services:4.4.0'
+    }
 }
 
 plugins {

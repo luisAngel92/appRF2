@@ -16,5 +16,10 @@ data class GameDetailDto(
     @SerializedName("price")
     var price: String? = null,
     @SerializedName("video")
-    var video: String? = null
+    var video: String? = null,
+    @SerializedName("longitud")
+    var longitud: Double? = null,
+    @SerializedName("latitud")
+    var latitud: Double? = null
+
 )

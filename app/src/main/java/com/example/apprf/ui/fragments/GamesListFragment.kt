@@ -1,5 +1,7 @@
 package com.example.apprf.ui.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.apprf.R
@@ -25,6 +28,8 @@ import retrofit2.Response
 
 
 class GamesListFragment : Fragment() {
+
+    private var fineLocationPermissionGranted = false
 
     lateinit var mp: MediaPlayer
 
@@ -121,9 +126,7 @@ class GamesListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         // Comenzar la reproducción nuevamente al volver al fragmento
-        //if (requireActivity() is MainActivity) {
-           // val mainActivity = requireActivity() as MainActivity
-           // mainActivity.mp.start()}
+
         mp.start()
     }
 
@@ -138,13 +141,11 @@ class GamesListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
 
-        //mp.stop()
 
-        //if (requireActivity() is MainActivity) {
-          //  val mainActivity = requireActivity() as MainActivity
-           // mainActivity.mp.stop()}
 
         _binding = null
     }
+
+
 
 }
